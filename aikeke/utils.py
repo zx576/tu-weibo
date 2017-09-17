@@ -15,3 +15,15 @@ def process_time(func):
 		print(time.ctime())
 
 	return inner
+
+
+# 保存返回内容的装饰器
+def save_res(func):
+	@wraps(func)
+	def inner(*args, **kw):
+		print('in dec')
+		res = func(*args, **kw)
+		with open('test.html', 'w')as f:
+			f.write(res)
+
+	return inner
