@@ -15,6 +15,12 @@ class Req:
 			Req._instance = object.__new__(cls)
 		return cls._instance
 
+	def __init__(self):
+		self.headers = {'Host':'weibo.com',
+						'Pragma':'no-cache',
+						'Upgrade-Insecure-Requests':'1',
+						}
+
 	# 请求网页
 	# 构造 header 和 proxy 进行请求
 	# 如果 请求失败则删除代理重新请求一次
@@ -26,7 +32,7 @@ class Req:
 		# proxy = random.choice(PROXIES)
 		proxy = None
 
-		header = {}
+		header = self.headers
 		header['User-Agent'] = ua
 		header['Cookie'] = cookie
 

@@ -27,3 +27,18 @@ def save_res(func):
 			f.write(res)
 
 	return inner
+
+# 延迟执行 t 秒
+def delay(t):
+	if not isinstance(t, int):
+		t = 3
+	time.sleep(t)
+	def wrapfunc(func):
+		@wraps(func)
+		def inner(*args, **kw):
+			
+			func(*args, **kw)
+
+		return inner
+
+	return wrapfunc

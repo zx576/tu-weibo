@@ -2,9 +2,10 @@
 
 # 测试文件
 import bs4
+import time
 
 from models import Testitem
-from utils import process_time
+from utils import process_time,delay
 from req import Req
 from clean import Clean
 from models import Aikeke
@@ -26,13 +27,13 @@ class TestRep:
 		self.r = Req()
 
 	def test_requrl(self):
-		url = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&profile_ftype=1&is_all=1&pagebar=0&pl_name=Pl_Official_MyProfileFeed__21&id=1005051402400261&script_uri=/fly51fly&feed_type=0&page=1&pre_page=1&domain_op=100505&__rnd=1505205474083'
+		url = 'https://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&topnav=1&wvr=6&topsug=1&is_all=1&pagebar=0&pl_name=Pl_Official_MyProfileFeed__21&id=1005051402400261&script_uri=/fly51fly&feed_type=0&page=1&pre_page=1&domain_op=100505&__rnd=1505719990598'
 		res = self.r.req_url(url).json()
 		soup = bs4.BeautifulSoup(res['data'])
 
-		# print(soup.prettify())
-		with open('soup.html', 'w') as f:
-			f.write(soup.prettify())
+		print(soup.prettify())
+		# with open('soup.html', 'w') as f:
+		# 	f.write(soup.prettify())
 
 
 class TestClean:
@@ -53,6 +54,11 @@ class TestAikeke:
 		for i in query[:10]:
 			print(i.content, i.url)
 
+class TestUtils:
+
+	@delay(3)
+	def f(self):
+		print(time.ctime())
 
 
 if __name__ == '__main__':
@@ -65,5 +71,8 @@ if __name__ == '__main__':
 	# pass
 	# ta = TestAikeke()
 	# ta.test_is_saved()
+
+	# tu = TestUtils()
+	# tu.f()
 
 

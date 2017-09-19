@@ -6,6 +6,7 @@ from req import Req
 import queue
 import bs4
 import json
+import re
 
 from utils import save_res
 from models import Aikeke
@@ -17,12 +18,12 @@ class Clean(object):
 		self.que = queue.Queue()
 
 		self.root_url = 'http://weibo.com/fly51fly?is_all=1&stat_date={0}&page={1}#feedtop'
-		self.ajax_url = 'http://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505& \
-						is_all=1&stat_date={0}&pagebar={1}&pl_name=Pl_Official_MyProfileFeed__21& \
-						id=1005051402400261&script_uri=/fly51fly&feed_type=0&page={2}&pre_page={2}& \
-						domain_op=100505&__rnd=1505272050817'
+		self.ajax_url = 'https://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&is_all=1&stat_date={0}&pagebar={1}&pl_name=Pl_Official_MyProfileFeed__21&id=1005051402400261&script_uri=/fly51fly&feed_type=0&page={2}&pre_page={2}&domain_op=100505&__rnd=1505272050817'
+
+		# self.ajax_url = 'https://weibo.com/p/aj/v6/mblog/mbloglist?ajwvr=6&domain=100505&topnav=1&wvr=6&topsug=1&is_all=1&pagebar=0&pl_name=Pl_Official_MyProfileFeed__21&id=1005051402400261&script_uri=/fly51fly&feed_type=0&page=1&pre_page=1&domain_op=100505&__rnd=1505719990598'
 
 		self.date = date
+		self.signal = True
 		# 初始添加 urls
 		self._init_ipt_queue()
 		# 
@@ -64,16 +65,41 @@ class Clean(object):
 			# 相关链接
 			a_url = div.find('a', attrs={'action-type': 'feed_list_url'})
 			url = a_url['href'] if a_url else 'none'
-			print(content, url)
-			Aikeke.create(
-				content=content,
-				url=url)
+			print(content, '-----', url)
+			# Aikeke.create(
+			# 	content=content,
+			# 	url=url)
+
+		# 获取本月总页数，然后入队 url
+		# self.signal 为是否添加执行入队标记
+		# 因为入队操作只需要执行一次
+		soup_pages = soup.find('div', class_='W_pages')
+		if soup_pages and self.signal:
+			max_page_str = soup_pages.find('li').get_text()
+			patt = re.compile(r'\d+')
+			max_page = re.findall(patt, max_page_str)
+			if not max_page: return
+			max_page = int(max_page[0])
+			print(max_page)
+			self.add_pages_to_que(max_page)
+			self.signal = False
 
 
 	# ajax 加载的网页分析
 	def _ana_ajax_html(self, html):
 
-		pass
+		# print(html)
+		page = html['data']
+		if not page: return 
+		soup = bs4.BeautifulSoup(page, 'lxml')
+
+		# print(soup.prettify())
+		# 调试时使用方法
+		# with open('ajax_soup_2.html', 'w')as f:
+		# 	f.write(soup.prettify())
+
+		self._ana_html_tags(soup)
+
 
 	def add_pages_to_que(self, maxpage):
 		if not maxpage or maxpage < 2:
@@ -84,6 +110,7 @@ class Clean(object):
 			for u in aj_urls:
 				self.que.put(u)
 
+		print(self.que.qsize())
 
 	# 分发内容
 	def _dispatch(self):
@@ -96,10 +123,13 @@ class Clean(object):
 			try:
 				url = self.que.get()
 				page = self.r.req_url(url)
-				if url.startswith('http://weibo.com/p/aj'):
+				print(page.status_code)
+				if url.startswith('https://weibo.com/p/aj'):
+					# print(url)
 					self._ana_ajax_html(page.json())
 				else:
-					self._ana_normal_html(page.text)
+					pass
+					# self._ana_normal_html(page.text)
 
 			except Exception as e:
 				print(e)
