@@ -23,7 +23,7 @@
 
 ### 文件框架
 
-####　基本配置
+#### 基本配置
 
 所有常用不变的参数都在　settings.py 中，比如数据库配置信息，USER-AGENTS 等信息。
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
 	tdb.test_testitem()
 ```
 
-在之后的代码中，我们可能会频繁的使用测试功能。
+在之后的代码中，我们会频繁的使用测试功能。
 
 
 #### 一些小工具
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 查看运行时间的装饰器
 
 utils.py
-```
+```python
 from functools import wraps
 import time 
 
@@ -128,7 +128,7 @@ def process_time(func):
 	def inner(*arge, **kw):
 
 		print(time.ctime())
-		func(*arge, **kw)
+		return func(*arge, **kw)
 		print(time.ctime())
 
 	return inner

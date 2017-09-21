@@ -116,7 +116,7 @@ def delay(t):
 		@wraps(func)
 		def inner(*args, **kw):
 			
-			func(*args, **kw)
+			return func(*args, **kw)
 
 		return inner
 

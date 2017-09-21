@@ -2,9 +2,12 @@
 
 # 本文件包含了请求网页的方法
 
-from settings import UA,COOKIES,PROXIES
 import requests
 import random
+
+from settings import UA,COOKIES,PROXIES
+from utils import delay
+
 
 class Req:
 
@@ -50,6 +53,7 @@ class Req:
 			error += 1
 			return self._req_url(url, error)
 
+	@delay(1)
 	def req_url(self, url):
 
 		return self._req_url(url)

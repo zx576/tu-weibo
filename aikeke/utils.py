@@ -11,7 +11,7 @@ def process_time(func):
 	def inner(*arge, **kw):
 
 		print(time.ctime())
-		func(*arge, **kw)
+		return func(*arge, **kw)
 		print(time.ctime())
 
 	return inner
@@ -37,8 +37,9 @@ def delay(t):
 		@wraps(func)
 		def inner(*args, **kw):
 			
-			func(*args, **kw)
+			return func(*args, **kw)
 
 		return inner
 
 	return wrapfunc
+

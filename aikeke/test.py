@@ -3,6 +3,7 @@
 # 测试文件
 import bs4
 import time
+import requests
 
 from models import Testitem
 from utils import process_time,delay
@@ -12,13 +13,14 @@ from models import Aikeke
 
 
 class TestDB:
-	@process_time
 	def test_testitem(self):
 		# 测试新建
-		Testitem.create(
-			field1='v',
-			field2=9
-			)
+		item, cre = Testitem.get_or_create(
+								field1='vs',
+								field2=9
+								)
+
+		print(item, cre)
 
 
 class TestRep:
@@ -57,8 +59,15 @@ class TestAikeke:
 class TestUtils:
 
 	@delay(3)
-	def f(self):
+	def f(self, s):
+		print(s)
 		print(time.ctime())
+
+	@delay(1)
+	def req(self, url):
+		r = Req()
+		res = r.req_url(url)
+		print(res.text)
 
 
 if __name__ == '__main__':
@@ -66,13 +75,13 @@ if __name__ == '__main__':
 	# tdb.test_testitem()
 	# trp = TestRep()
 	# trp.test_requrl()
-	tc = TestClean()
-	tc.test_ana_normal()
+	# tc = TestClean()
+	# tc.test_ana_normal()
 	# pass
 	# ta = TestAikeke()
 	# ta.test_is_saved()
 
-	# tu = TestUtils()
-	# tu.f()
+	tu = TestUtils()
+	tu.req(url='https://www.v2ex.com/')
 
 
